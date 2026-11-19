@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+model Employee {
+  id             Int      @id @default(autoincrement())
+  employeeNumber String   @unique
+  firstName      String
+  lastName       String
+  email          String   @unique
+  department     String
+  country        String
+  hireDate       DateTime
+  status         String   @default("ACTIVE")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  salaries       Salary[]
+  @@index([department])
+  @@index([country])
+  @@index([lastName, firstName])
+}
+model Salary {
+  id          Int      @id @default(autoincrement())
+  employeeId  Int
+  amountMinor Int
+  currency    String
+  effectiveAt DateTime
+  createdAt   DateTime @default(now())
+  employee    Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  @@index([employeeId, effectiveAt])
+  @@index([currency])
+}
